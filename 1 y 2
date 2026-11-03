@@ -1,0 +1,18 @@
+-- Comida Rapida --
+Sistema de pedidos para un local con productos.
+Los productos son:
+Hamburguesa
+Pizza
+Perro Caliente
+Salchipapa
+Mazorcada
+Arepa
+Bebidas
+--------------------------------------------------
+
+•	Bebidas y platos con adiciones opcionales que modifican el precio y la descripción.
+•	Combos armados paso a paso con muchas opciones.
+•	Aviso automático a cocina, caja y mesero cuando cambia el estado de un pedido.
+•	Promociones por día.
+•	Cierre de caja y reporte de ventas diario y semanal.
+	
