@@ -4,9 +4,15 @@ package com.comidarapida.vista;
 import javax.swing.*;
 import java.awt.*;
 
+import com.comidarapida.servicios.ServicioProductos;
+
 public class VistaPrincipal extends JFrame {
 
-    public VistaPrincipal() {
+    private ServicioProductos servicio;
+
+    public VistaPrincipal(ServicioProductos servicio) {
+
+        this.servicio = servicio;
 
         setTitle("Sistema de Comida Rapida");
         setSize(850, 600);
@@ -37,7 +43,12 @@ public class VistaPrincipal extends JFrame {
         salir.setBounds(300, 430, 230, 45);
 
         productos.addActionListener(e -> {
-            VistaProductos ventana = new VistaProductos();
+            VistaProductos ventana = new VistaProductos(servicio);
+            ventana.setVisible(true);
+        });
+
+        pedidos.addActionListener(e -> {
+            VistaPedidos ventana = new VistaPedidos(servicio);
             ventana.setVisible(true);
         });
 
