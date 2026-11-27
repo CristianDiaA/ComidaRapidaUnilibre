@@ -14,7 +14,7 @@ public class VistaPedidos extends JFrame {
     private PedidoController controlador;
 
     private JComboBox<Producto> cbProductos;
-    private JComboBox<String> cbAdiciones;
+    private JComboBox<Adicion> cbAdiciones;
     private JSpinner spCantidad;
 
     private DefaultTableModel modelo;
@@ -65,15 +65,12 @@ public class VistaPedidos extends JFrame {
         adicion.setBounds(50, 200, 100, 30);
         adicion.setForeground(Color.WHITE);
 
-        cbAdiciones = new JComboBox<>(new String[]{
-            "Sin adicion",
-            "Queso (+2000)",
-            "Tocineta (+3000)",
-            "Champiñones (+2500)",
-            "Salsa especial (+1000)"
-        });
+        cbAdiciones = new JComboBox<>();
 
         cbAdiciones.setBounds(150, 200, 220, 30);
+
+        cbProductos.addActionListener(e -> actualizarAdiciones());
+        actualizarAdiciones();
 
         JButton agregar = new JButton("Agregar al Pedido");
         agregar.setBounds(150, 250, 220, 35);
@@ -88,6 +85,7 @@ public class VistaPedidos extends JFrame {
         );
 
         JTable tabla = new JTable(modelo);
+        tabla.setAutoCreateRowSorter(true);
 
         JScrollPane scroll = new JScrollPane(tabla);
         scroll.setBounds(400, 100, 450, 300);
@@ -139,35 +137,70 @@ public class VistaPedidos extends JFrame {
 
         int cantidad = (int) spCantidad.getValue();
 
-        String adicion = cbAdiciones.getSelectedItem().toString();
-
-        double precioAdicion = 0;
-
-        if (adicion.startsWith("Queso")) {
-            precioAdicion = 2000;
-        }
-
-        else if (adicion.startsWith("Tocineta")) {
-            precioAdicion = 3000;
-        }
-
-        else if (adicion.startsWith("Champiñones")) {
-            precioAdicion = 2500;
-        }
-
-        else if (adicion.startsWith("Salsa")) {
-            precioAdicion = 1000;
-        }
+        Adicion seleccion = (Adicion) cbAdiciones.getSelectedItem();
+        String adicion = seleccion.toString();
 
         controlador.agregarProducto(
             producto,
             cantidad,
             adicion,
-            precioAdicion
+            seleccion.getPrecio()
         );
 
         actualizarTabla();
 
+    }
+
+    private void actualizarAdiciones() {
+        cbAdiciones.removeAllItems();
+        cbAdiciones.addItem(new Adicion("Sin adicion", 0));
+
+        Producto producto = (Producto) cbProductos.getSelectedItem();
+        if (producto == null) {
+            return;
+        }
+
+        switch (producto.getCategoria()) {
+            case "Hamburguesa":
+                agregarAdicion("Queso", 2000);
+                agregarAdicion("Tocineta", 3000);
+                agregarAdicion("Salsa especial", 1000);
+                break;
+            case "Pizza":
+                agregarAdicion("Queso", 2000);
+                agregarAdicion("Tocineta", 3000);
+                agregarAdicion("Champiñones", 2500);
+                break;
+            case "Perro Caliente":
+                agregarAdicion("Queso", 2000);
+                agregarAdicion("Tocineta", 3000);
+                agregarAdicion("Salsa especial", 1000);
+                break;
+            case "Salchipapa":
+                agregarAdicion("Queso", 2000);
+                agregarAdicion("Tocineta", 3000);
+                agregarAdicion("Salsa especial", 1000);
+                break;
+            case "Mazorcada":
+                agregarAdicion("Queso", 2000);
+                agregarAdicion("Tocineta", 3000);
+                agregarAdicion("Champiñones", 2500);
+                agregarAdicion("Salsa especial", 1000);
+                break;
+            case "Arepa":
+                agregarAdicion("Queso", 2000);
+                agregarAdicion("Tocineta", 3000);
+                break;
+            case "Bebida":
+                agregarAdicion("Hielo", 500);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void agregarAdicion(String nombre, double precio) {
+        cbAdiciones.addItem(new Adicion(nombre, precio));
     }
 
     private void actualizarTabla() {
@@ -193,6 +226,14 @@ public class VistaPedidos extends JFrame {
 
     private void cambiarEstado() {
 
+        if (controlador.obtenerDetalles().isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El pedido esta vacío"
+            );
+            return;
+        }
+
         controlador.avanzarEstado();
 
         lblEstado.setText(
@@ -208,6 +249,28 @@ public class VistaPedidos extends JFrame {
 
         }
 
+    }
+    private static class Adicion {
+
+        private final String nombre;
+        private final double precio;
+
+        private Adicion(String nombre, double precio) {
+            this.nombre = nombre;
+            this.precio = precio;
+        }
+
+        private double getPrecio() {
+            return precio;
+        }
+
+        @Override
+        public String toString() {
+            if (precio == 0) {
+                return nombre;
+            }
+            return nombre + " (+" + precio + ")";
+        }
     }
 
 }
