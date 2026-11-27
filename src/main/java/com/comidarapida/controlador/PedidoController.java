@@ -3,6 +3,7 @@ package com.comidarapida.controlador;
 
 import com.comidarapida.modelo.*;
 import com.comidarapida.servicios.ServicioProductos;
+import com.comidarapida.servicios.ServicioVentas;
 import com.comidarapida.observer.*;
 
 import java.util.ArrayList;
@@ -10,12 +11,23 @@ import java.util.ArrayList;
 public class PedidoController {
 
     private ServicioProductos servicio;
+    private ServicioVentas servicioVentas;
+
     private Pedido pedido;
+    private ArrayList<Pedido> historialPedidos;
+
     private PedidoObservable observable;
 
-    public PedidoController(ServicioProductos servicio) {
+    public PedidoController(
+        ServicioProductos servicio,
+        ServicioVentas servicioVentas,
+        ArrayList<Pedido> historialPedidos
+    ) {
 
         this.servicio = servicio;
+        this.servicioVentas = servicioVentas;
+        this.historialPedidos = historialPedidos;
+
         pedido = new Pedido();
 
         observable = new PedidoObservable();
@@ -73,7 +85,28 @@ public class PedidoController {
         }
 
         else if (estado.equals("Listo")) {
+
+            if (!servicioVentas.isCajaAbierta()) {
+                throw new IllegalStateException(
+                    "No se puede entregar: la caja está cerrada."
+                );
+            }
+
+            boolean registrada = servicioVentas.registrarVenta(
+                "Pedido #" + pedido.getId(),
+                pedido.calcularTotal()
+            );
+
+            if (!registrada) {
+                throw new IllegalStateException(
+                    "No se pudo registrar la venta."
+                );
+            }
+
             pedido.setEstado("Entregado");
+
+            historialPedidos.add(pedido);
+
         }
 
         else {
@@ -85,6 +118,10 @@ public class PedidoController {
             "El pedido ha cambiado de estado"
         );
 
+    }
+
+    public ArrayList<Pedido> obtenerHistorial() {
+        return new ArrayList<>(historialPedidos);
     }
 
 }

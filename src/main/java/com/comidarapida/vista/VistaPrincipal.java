@@ -3,19 +3,30 @@ package com.comidarapida.vista;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 import com.comidarapida.servicios.ServicioProductos;
+import com.comidarapida.servicios.ServicioVentas;
+import com.comidarapida.modelo.Pedido;
 
 public class VistaPrincipal extends JFrame {
 
     private ServicioProductos servicio;
+    private ServicioVentas servicioVentas;
+    private ArrayList<Pedido> historialPedidos;
 
-    public VistaPrincipal(ServicioProductos servicio) {
+    public VistaPrincipal(
+        ServicioProductos servicio,
+        ServicioVentas servicioVentas,
+        ArrayList<Pedido> historialPedidos
+    ) {
 
         this.servicio = servicio;
+        this.servicioVentas = servicioVentas;
+        this.historialPedidos = historialPedidos;
 
         setTitle("Sistema de Comida Rapida");
-        setSize(850, 600);
+        setSize(850, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -29,8 +40,11 @@ public class VistaPrincipal extends JFrame {
         titulo.setForeground(Color.WHITE);
 
         ImageIcon banana = new ImageIcon("resources/banana.gif");
+
         if (banana.getIconWidth() < 0) {
-            throw new IllegalStateException("No se pudo cargar resources/banana.gif");
+            throw new IllegalStateException(
+                "No se pudo cargar resources/banana.gif"
+            );
         }
 
         JLabel bananaIzquierda = new JLabel(banana);
@@ -52,7 +66,17 @@ public class VistaPrincipal extends JFrame {
         caja.setBounds(300, 360, 230, 45);
 
         JButton salir = new JButton("Salir");
-        salir.setBounds(300, 430, 230, 45);
+        salir.setBounds(300, 500, 230, 45);
+
+        JButton historial = new JButton("Historial de Pedidos");
+        historial.setBounds(300, 430, 230, 45);
+
+        historial.addActionListener(e -> {
+        VistaHistorialPedidos ventana =
+        new VistaHistorialPedidos(historialPedidos);
+
+            ventana.setVisible(true);
+        });
 
         productos.addActionListener(e -> {
             VistaProductos ventana = new VistaProductos(servicio);
@@ -60,7 +84,21 @@ public class VistaPrincipal extends JFrame {
         });
 
         pedidos.addActionListener(e -> {
-            VistaPedidos ventana = new VistaPedidos(servicio);
+            VistaPedidos ventana = new VistaPedidos(
+                servicio,
+                servicioVentas,
+                historialPedidos
+            );
+            ventana.setVisible(true);
+        });
+
+        promociones.addActionListener(e -> {
+            VistaPromociones ventana = new VistaPromociones();
+            ventana.setVisible(true);
+        });
+
+        caja.addActionListener(e -> {
+            VistaCaja ventana = new VistaCaja(servicioVentas);
             ventana.setVisible(true);
         });
 
@@ -74,6 +112,7 @@ public class VistaPrincipal extends JFrame {
         add(promociones);
         add(caja);
         add(salir);
+        add(historial);
 
     }
 

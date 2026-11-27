@@ -4,10 +4,12 @@ package com.comidarapida.vista;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 import com.comidarapida.modelo.*;
 import com.comidarapida.controlador.PedidoController;
 import com.comidarapida.servicios.ServicioProductos;
+import com.comidarapida.servicios.ServicioVentas;
 
 public class VistaPedidos extends JFrame {
 
@@ -21,9 +23,13 @@ public class VistaPedidos extends JFrame {
     private JLabel lblTotal;
     private JLabel lblEstado;
 
-    public VistaPedidos(ServicioProductos servicio) {
+    public VistaPedidos(
+        ServicioProductos servicio,
+        ServicioVentas servicioVentas,
+        ArrayList<Pedido> historialPedidos
+    ) {
 
-        controlador = new PedidoController(servicio);
+        controlador = new PedidoController(servicio, servicioVentas,historialPedidos);
 
         setTitle("Gestion de Pedidos");
         setSize(900, 600);
@@ -228,23 +234,36 @@ public class VistaPedidos extends JFrame {
 
         if (controlador.obtenerDetalles().isEmpty()) {
             JOptionPane.showMessageDialog(
-                    this,
-                    "El pedido esta vacío"
+                this,
+                "El pedido esta vacío"
             );
             return;
         }
 
-        controlador.avanzarEstado();
+        try {
 
-        lblEstado.setText(
-            "Estado: " + controlador.obtenerEstado()
-        );
+            controlador.avanzarEstado();
 
-        if (controlador.obtenerEstado().equals("Entregado")) {
+            lblEstado.setText(
+                "Estado: " + controlador.obtenerEstado()
+            );
+
+            if (controlador.obtenerEstado().equals("Entregado")) {
+
+                JOptionPane.showMessageDialog(
+                    this,
+                    "El pedido ha sido entregado y registrado en caja."
+                );
+
+            }
+
+        } catch (IllegalStateException ex) {
 
             JOptionPane.showMessageDialog(
                 this,
-                "El pedido ha sido entregado"
+                ex.getMessage(),
+                "Error",
+                JOptionPane.WARNING_MESSAGE
             );
 
         }
