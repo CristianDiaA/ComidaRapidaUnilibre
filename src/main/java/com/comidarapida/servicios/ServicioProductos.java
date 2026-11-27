@@ -35,4 +35,8 @@ public class ServicioProductos {
     public ArrayList<Producto> listarProductos() {
         return new ArrayList<>(productos);
     }
+
+    public boolean eliminarProducto(Producto producto) {
+        return productos.remove(producto);
+    }
 }

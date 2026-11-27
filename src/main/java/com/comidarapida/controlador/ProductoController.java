@@ -28,4 +28,8 @@ public class ProductoController {
         return servicio.listarProductos();
     }
 
+    public boolean eliminarProducto(Producto producto) {
+        return servicio.eliminarProducto(producto);
+    }
+
 }

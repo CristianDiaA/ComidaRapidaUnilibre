@@ -23,7 +23,7 @@ public class VistaPrincipal extends JFrame {
         getContentPane().setBackground(new Color(35, 35, 35));
 
         JLabel titulo = new JLabel("COMIDA RAPIDA");
-        titulo.setBounds(280, 40, 300, 50);
+        titulo.setBounds(290, 40, 300, 50);
         titulo.setFont(new Font("Arial", Font.BOLD, 30));
         titulo.setForeground(Color.WHITE);
 

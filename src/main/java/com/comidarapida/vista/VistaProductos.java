@@ -4,6 +4,8 @@ package com.comidarapida.vista;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import com.comidarapida.controlador.ProductoController;
 import com.comidarapida.modelo.Producto;
@@ -17,6 +19,7 @@ public class VistaProductos extends JFrame {
     private DefaultTableModel modelo;
 
     private ProductoController controlador;
+    private Producto productoSeleccionado;
 
     public VistaProductos(com.comidarapida.servicios.ServicioProductos servicio
 
@@ -74,11 +77,48 @@ public class VistaProductos extends JFrame {
         );
 
         JTable tabla = new JTable(modelo);
+        tabla.setAutoCreateRowSorter(true);
+
+        JPopupMenu menuContextual = new JPopupMenu();
+        JMenuItem eliminar = new JMenuItem("Eliminar producto");
+        menuContextual.add(eliminar);
+
+        tabla.addMouseListener(new MouseAdapter() {
+            private void mostrarMenu(MouseEvent evento) {
+                if (!evento.isPopupTrigger()) {
+                    return;
+                }
+
+                int fila = tabla.rowAtPoint(evento.getPoint());
+                if (fila < 0) {
+                    return;
+                }
+
+                tabla.setRowSelectionInterval(fila, fila);
+                int filaModelo = tabla.convertRowIndexToModel(fila);
+                productoSeleccionado = controlador.obtenerProductos()
+                        .get(filaModelo);
+                menuContextual.show(tabla, evento.getX(), evento.getY());
+            }
+
+            @Override
+            public void mousePressed(MouseEvent evento) {
+                mostrarMenu(evento);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent evento) {
+                mostrarMenu(evento);
+            }
+        });
+
+        eliminar.addActionListener(e -> eliminarProducto());
 
         JScrollPane scroll = new JScrollPane(tabla);
         scroll.setBounds(400, 100, 350, 300);
 
         agregar.addActionListener(e -> agregarProducto());
+        cargarProductos();
 
         add(titulo);
         add(nombre);
@@ -90,6 +130,18 @@ public class VistaProductos extends JFrame {
         add(agregar);
         add(scroll);
 
+    }
+
+    private void cargarProductos() {
+        modelo.setRowCount(0);
+
+        for (Producto producto : controlador.obtenerProductos()) {
+            modelo.addRow(new Object[]{
+                    producto.getNombre(),
+                    producto.getPrecio(),
+                    producto.getCategoria()
+            });
+        }
     }
 
     private void agregarProducto() {
@@ -107,15 +159,7 @@ public class VistaProductos extends JFrame {
             );
 
             if (resultado) {
-
-                Producto producto = controlador.obtenerProductos()
-                    .get(controlador.obtenerProductos().size() - 1);
-
-                modelo.addRow(new Object[]{
-                    producto.getNombre(),
-                    producto.getPrecio(),
-                    producto.getCategoria()
-                });
+                cargarProductos();
 
                 txtNombre.setText("");
                 txtPrecio.setText("");
@@ -139,7 +183,31 @@ public class VistaProductos extends JFrame {
             );
 
         }
+    }
 
+    private void eliminarProducto() {
+        if (productoSeleccionado == null) {
+            return;
+        }
+
+        int confirmacion = JOptionPane.showConfirmDialog(
+                this,
+                "¿Deseas eliminar el producto "
+                        + productoSeleccionado.getNombre() + "?",
+                "Confirmar eliminacion",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            if (controlador.eliminarProducto(productoSeleccionado)) {
+                cargarProductos();
+                productoSeleccionado = null;
+            } else {
+                JOptionPane.showMessageDialog(
+                        this, "No se pudo eliminar el producto"
+                );
+            }
+        }
     }
 
 }
