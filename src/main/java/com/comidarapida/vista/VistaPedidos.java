@@ -29,6 +29,7 @@ public class VistaPedidos extends JFrame {
         setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setResizable(false);
         setLayout(null);
 
         getContentPane().setBackground(new Color(40, 40, 40));

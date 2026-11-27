@@ -17,6 +17,7 @@ public class VistaPrincipal extends JFrame {
         setTitle("Sistema de Comida Rapida");
         setSize(850, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
         setLocationRelativeTo(null);
         setLayout(null);
 
@@ -26,6 +27,17 @@ public class VistaPrincipal extends JFrame {
         titulo.setBounds(290, 40, 300, 50);
         titulo.setFont(new Font("Arial", Font.BOLD, 30));
         titulo.setForeground(Color.WHITE);
+
+        ImageIcon banana = new ImageIcon("resources/banana.gif");
+        if (banana.getIconWidth() < 0) {
+            throw new IllegalStateException("No se pudo cargar resources/banana.gif");
+        }
+
+        JLabel bananaIzquierda = new JLabel(banana);
+        bananaIzquierda.setBounds(250, 44, 33, 35);
+
+        JLabel bananaDerecha = new JLabel(banana);
+        bananaDerecha.setBounds(546, 44, 33, 35);
 
         JButton pedidos = new JButton("Gestionar Pedidos");
         pedidos.setBounds(300, 150, 230, 45);
@@ -55,6 +67,8 @@ public class VistaPrincipal extends JFrame {
         salir.addActionListener(e -> dispose());
 
         add(titulo);
+        add(bananaIzquierda);
+        add(bananaDerecha);
         add(pedidos);
         add(productos);
         add(promociones);

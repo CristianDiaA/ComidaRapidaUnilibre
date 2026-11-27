@@ -30,6 +30,7 @@ public class VistaProductos extends JFrame {
         setSize(800, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setResizable(false);
         setLayout(null);
 
         getContentPane().setBackground(new Color(40, 40, 40));
